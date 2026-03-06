@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGI Lab - AI Agent Hackathon 2026 Kickoff</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FAFAF9;
+      --bg-surface: #FFFFFF;
+      --bg-card: rgba(255, 255, 255, 0.85);
+      --border: #E5E5E5;
+      --border-accent: #00A3FF;
+      /* Cyan-Blue */
+      --text: #171717;
+      --text-dim: #525252;
+      --text-muted: #A3A3A3;
+      --accent: #00A3FF;
+      /* Structural Cyan-Blue */
+      --accent-glow: rgba(0, 163, 255, 0.08);
+      --gold: #D4AF37;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'Noto Sans JP', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+    }
+
+    /* === DOT GRID & STRUCTURAL LINES === */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      /* Dotted grid */
+      background-image: radial-gradient(var(--border) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      /* Structural large frames overlay */
+      background-image:
+        linear-gradient(to right, var(--border) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+      background-size: 20vw 20vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    /* Structural border frames for the whole screen */
+    .frame-border {
+      position: fixed;
+      inset: 2rem;
+      border: 1px dotted var(--border-accent);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .frame-border::before,
+    .frame-border::after {
+      content: '+';
+      position: absolute;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .frame-border::before {
+      top: -0.5rem;
+      left: -0.4rem;
+    }
+
+    .frame-border::after {
+      bottom: -0.5rem;
+      right: -0.4rem;
+    }
+
+    /* === DECK === */
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: clamp(3rem, 6vh, 6rem) clamp(4rem, 8vw, 10rem);
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    /* === TYPOGRAPHY — PRESENTATION SCALE === */
+    .slide-number {
+      position: absolute;
+      top: clamp(1.5rem, 3vh, 2.5rem);
+      right: clamp(2rem, 4vw, 4rem);
+      font-family: var(--font-mono);
+      font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--accent);
+    }
+
+    h1 {
+      font-family: var(--font-body);
+      font-weight: 900;
+      font-size: clamp(3rem, 7vw, 7rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+
+    h2 {
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: clamp(2.2rem, 4.5vw, 4rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    h3 {
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: clamp(1.3rem, 2.2vw, 2rem);
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .subtitle {
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: clamp(1.1rem, 2vw, 1.7rem);
+      color: var(--text-dim);
+      letter-spacing: 0.02em;
+      line-height: 1.7;
+    }
+
+    .accent-text {
+      background: linear-gradient(135deg, #00E5FF, #007AFF, #AF52DE);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: var(--accent);
+    }
+
+    .tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: clamp(0.8rem, 1.1vw, 1rem);
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-accent);
+      padding: 0.3em 1em;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      position: relative;
+    }
+
+    .tag::before {
+      content: '';
+      position: absolute;
+      left: -4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 2px;
+      height: 60%;
+      background: var(--accent);
+    }
+
+    /* === CARD / STRUCTURE === */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: clamp(2rem, 4vh, 3.5rem) clamp(2.5rem, 4vw, 4rem);
+      backdrop-filter: blur(16px);
+      width: 100%;
+      max-width: 1100px;
+      position: relative;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 1px dotted var(--border);
+      pointer-events: none;
+    }
+
+    .card--accent {
+      border-top: 4px solid var(--accent);
+      border-bottom: 4px solid var(--accent);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+
+    .card--hero {
+      border: 1px solid var(--accent);
+      background: var(--accent-glow);
+    }
+
+    /* === GRIDS === */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 1.8rem);
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: clamp(1rem, 2vw, 1.8rem);
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    /* === METRIC BOX === */
+    .metric-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: clamp(1.8rem, 3vh, 3rem) clamp(1.5rem, 2.5vw, 2.5rem);
+      text-align: center;
+      position: relative;
+    }
+
+    .metric-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-top: 2px solid var(--accent);
+      border-left: 2px solid var(--accent);
+    }
+
+    .metric-box .value {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .metric-box .label {
+      font-size: clamp(1rem, 1.5vw, 1.4rem);
+      color: var(--text);
+      margin-top: 0.5em;
+      font-weight: 600;
+    }
+
+    .metric-box .desc {
+      font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+      color: var(--text-dim);
+      margin-top: 0.7em;
+      line-height: 1.5;
+    }
+
+    /* === TIMELINE === */
+    .timeline {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .timeline-node {
+      flex: 0 0 auto;
+      text-align: center;
+      z-index: 2;
+      position: relative;
+      padding: 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+
+    .timeline-node .dot {
+      width: clamp(14px, 1.8vw, 20px);
+      height: clamp(14px, 1.8vw, 20px);
+      background: var(--accent);
+      margin: 0 auto 0.6em;
+    }
+
+    .timeline-node.highlight .dot {
+      width: clamp(18px, 2.2vw, 26px);
+      height: clamp(18px, 2.2vw, 26px);
+      background: var(--text);
+    }
+
+    .timeline-node .date {
+      font-family: var(--font-mono);
+      font-size: clamp(1rem, 1.4vw, 1.3rem);
+      color: var(--accent);
+      font-weight: 600;
+      border-bottom: 1px dotted var(--accent);
+      padding-bottom: 0.2em;
+    }
+
+    .timeline-node .event {
+      font-size: clamp(1rem, 1.4vw, 1.3rem);
+      color: var(--text);
+      font-weight: 500;
+      margin-top: 0.5em;
+    }
+
+    .timeline-line {
+      flex: 1;
+      height: 1px;
+      background: repeating-linear-gradient(90deg, var(--accent) 0, var(--accent) 4px, transparent 4px, transparent 8px);
+      z-index: 1;
+      margin-bottom: 3.5em;
+    }
+
+    /* === ACTION ITEMS === */
+    .action-item {
+      display: flex;
+      align-items: flex-start;
+      gap: clamp(1.2rem, 2vw, 2rem);
+      padding: clamp(1.2rem, 2vh, 1.8rem) 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .action-item:last-child {
+      border-bottom: none;
+    }
+
+    .action-num {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+      color: var(--accent);
+      line-height: 1;
+      flex-shrink: 0;
+      width: clamp(2.5rem, 4vw, 3.5rem);
+      padding-top: 0.2rem;
+    }
+
+    .action-content h3 {
+      font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+      margin-bottom: 0.3em;
+      color: var(--text);
+    }
+
+    .action-content p {
+      font-size: clamp(1rem, 1.3vw, 1.2rem);
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* === RULE ROWS === */
+    .rule-row {
+      display: flex;
+      align-items: baseline;
+      gap: clamp(1rem, 1.5vw, 1.5rem);
+      padding: clamp(1rem, 1.5vh, 1.4rem) 0;
+      border-bottom: 1px dotted var(--border);
+    }
+
+    .rule-row:last-child {
+      border-bottom: none;
+    }
+
+    .rule-badge {
+      font-family: var(--font-mono);
+      font-size: clamp(0.75rem, 1vw, 0.95rem);
+      font-weight: 600;
+      padding: 0.3em 0.8em;
+      border: 1px solid var(--text);
+      flex-shrink: 0;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .rule-badge.required {
+      background: var(--accent);
+      color: var(--bg-surface);
+      border-color: var(--accent);
+    }
+
+    .rule-badge.free {
+      background: transparent;
+      color: var(--text-dim);
+      border-color: var(--border);
+    }
+
+    .rule-text {
+      font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+      color: var(--text);
+      line-height: 1.55;
+      font-weight: 500;
+    }
+
+    .rule-text span {
+      color: var(--text-muted);
+      font-size: 0.92em;
+      font-weight: 400;
+    }
+
+    /* === TITLE SLIDE === */
+    .title-slide {
+      text-align: left;
+      align-items: flex-start;
+    }
+
+    .title-slide .logo-area {
+      margin-bottom: clamp(2rem, 4vh, 3.5rem);
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--text);
+      display: inline-block;
+    }
+
+    .title-slide .logo-text {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+      color: var(--text);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .title-slide .date-info {
+      font-family: var(--font-mono);
+      font-size: clamp(1rem, 1.4vw, 1.3rem);
+      color: var(--accent);
+      letter-spacing: 0.06em;
+      margin-top: clamp(1.5rem, 3vh, 2.5rem);
+      border: 1px solid var(--accent);
+      padding: 0.5em 1em;
+      display: inline-block;
+    }
+
+    /* === PRIZES === */
+    .prize-display {
+      text-align: center;
+    }
+
+    .prize-icon {
+      font-size: clamp(4.5rem, 10vw, 8rem);
+      margin-bottom: 0.3em;
+    }
+
+    .prize-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(1.2rem, 2vw, 2rem);
+      margin-top: clamp(2rem, 3vh, 3rem);
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .prize-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: clamp(1.8rem, 3vh, 2.8rem) clamp(1.5rem, 2vw, 2rem);
+      text-align: center;
+      position: relative;
+    }
+
+    .prize-card:first-child::before,
+    .prize-card:first-child::after {
+      content: '';
+      position: absolute;
+      border: 1px solid var(--accent);
+      inset: 4px;
+      pointer-events: none;
+    }
+
+    .prize-rank {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      line-height: 1;
+    }
+
+    .prize-card:nth-child(1) .prize-rank {
+      color: var(--accent);
+    }
+
+    .prize-card:nth-child(2) .prize-rank {
+      color: var(--text-dim);
+    }
+
+    .prize-card:nth-child(3) .prize-rank {
+      color: var(--text-muted);
+    }
+
+    .prize-name {
+      font-size: clamp(1.1rem, 1.5vw, 1.4rem);
+      color: var(--text);
+      margin-top: 0.5em;
+      font-weight: 600;
+    }
+
+    /* === CLOSING === */
+    .closing-quote {
+      font-family: var(--font-body);
+      font-weight: 900;
+      font-size: clamp(2.5rem, 5.5vw, 5rem);
+      text-align: center;
+      line-height: 1.25;
+      color: var(--text);
+      max-width: 1000px;
+      border-bottom: 4px solid var(--accent);
+      padding-bottom: 0.5em;
+    }
+
+    .closing-sub {
+      font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+      color: var(--text-dim);
+      text-align: center;
+      margin-top: clamp(2rem, 4vh, 3.5rem);
+      line-height: 1.7;
+      font-weight: 500;
+    }
+
+    /* === PROGRESS === */
+    .progress {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      background: var(--accent);
+      z-index: 100;
+      transition: width 0.4s ease;
+    }
+
+    /* === NAV HINT === */
+    .nav-hint {
+      position: fixed;
+      bottom: clamp(1.2rem, 2vh, 2rem);
+      right: clamp(2rem, 4vw, 3.5rem);
+      font-family: var(--font-mono);
+      font-size: clamp(0.75rem, 1vw, 0.9rem);
+      color: var(--text-muted);
+      z-index: 50;
+      letter-spacing: 0.06em;
+    }
+
+    /* === ANIMATIONS === */
+    .slide.active .reveal {
+      animation: revealRight 0.55s ease both;
+    }
+
+    .slide.active .reveal-1 {
+      animation-delay: 0.08s;
+    }
+
+    .slide.active .reveal-2 {
+      animation-delay: 0.18s;
+    }
+
+    .slide.active .reveal-3 {
+      animation-delay: 0.3s;
+    }
+
+    .slide.active .reveal-4 {
+      animation-delay: 0.42s;
+    }
+
+    .slide.active .reveal-5 {
+      animation-delay: 0.54s;
+    }
+
+    @keyframes revealRight {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .reveal {
+      opacity: 0;
+    }
+
+    /* === SPACERS === */
+    .gap-sm {
+      height: clamp(0.8rem, 1.5vh, 1.2rem);
+    }
+
+    .gap-md {
+      height: clamp(1.5rem, 2.5vh, 2.5rem);
+    }
+
+    .gap-lg {
+      height: clamp(2.5rem, 4vh, 4rem);
+    }
+
+    /* === NETWORK GRAPH BG / MISC SVG === */
+    .network-bg {
+      position: absolute;
+      right: -10%;
+      top: -10%;
+      width: 60%;
+      height: 120%;
+      opacity: 0.05;
+      pointer-events: none;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g stroke="%23171717" stroke-width="0.2"><line x1="10" y1="10" x2="50" y2="50"/><line x1="50" y1="50" x2="90" y2="20"/><line x1="50" y1="50" x2="70" y2="90"/><line x1="10" y1="90" x2="50" y2="50"/><circle cx="10" cy="10" r="1" fill="%2300A3FF"/><circle cx="50" cy="50" r="1.5" fill="%2300A3FF"/><circle cx="90" cy="20" r="1" fill="%2300A3FF"/><circle cx="70" cy="90" r="1" fill="%2300A3FF"/><circle cx="10" cy="90" r="1" fill="%2300A3FF"/></g></svg>');
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+
+      .grid-2,
+      .grid-3,
+      .prize-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.2rem;
+      }
+
+      .timeline-line {
+        width: 1px;
+        height: 2rem;
+        margin: 0 auto;
+        background: repeating-linear-gradient(180deg, var(--accent) 0, var(--accent) 4px, transparent 4px, transparent 8px);
+      }
+
+      .slide {
+        padding: 2rem 1.5rem;
+        align-items: flex-start;
+        text-align: left;
+      }
+
+      .title-slide {
+        text-align: left;
+      }
+
+      .closing-quote {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="frame-border"></div>
+
+  <div class="deck">
+
+    <!-- SLIDE 1: TITLE -->
+    <section class="slide title-slide active" data-slide="1">
+      <div class="network-bg"></div>
+      <span class="slide-number">01 / 10</span>
+      <div class="logo-area reveal reveal-1">
+        <span class="logo-text">AGI Lab</span>
+      </div>
+      <h1 class="reveal reveal-2">
+        AI<span class="accent-text">エージェント</span><br>ハッカソン <span style="font-family: var(--font-mono);">2026</span>
+      </h1>
+      <div class="gap-sm"></div>
+      <p class="subtitle reveal reveal-3"
+        style="font-size: clamp(1.3rem, 2.2vw, 2rem); font-weight: 700; color: var(--text);">自律するAIを、作れ。</p>
+      <p class="date-info reveal reveal-4">2026.03.06 FRI 19:00 - 21:00 &mdash; KICKOFF</p>
+    </section>
+
+    <!-- SLIDE 2: WHY -->
+    <section class="slide" data-slide="2">
+      <div class="network-bg" style="transform: scaleX(-1);"></div>
+      <span class="slide-number">02 / 10</span>
+      <div class="card card--accent" style="max-width: 1000px; width: 100%;">
+        <span class="tag reveal reveal-1">Why this hackathon</span>
+        <div class="gap-md"></div>
+        <h2 class="reveal reveal-2"
+          style="word-break: keep-all; white-space: nowrap; font-size: clamp(1.8rem, 3.8vw, 3.5rem);">作って、育てて、共有する2週間
+        </h2>
+        <div class="gap-md"></div>
+        <p class="subtitle reveal reveal-3">
+          AGIラボ初のハッカソンです。<br>
+          AIエージェントを「使う」だけでなく、「作って、育てて、共有する」側へ。<br>
+          Discordで進捗を出し合いながら、2週間で自分のエージェントを形にしましょう。
+        </p>
+        <div class="gap-lg"></div>
+        <div class="reveal reveal-4"
+          style="border-top: 1px solid var(--border); padding-top: 1.5em; display: flex; align-items: baseline; gap: 1rem;">
+          <span
+            style="font-family: var(--font-mono); color: var(--accent); font-weight: bold; flex-shrink: 0; white-space: nowrap;">[
+            GOAL ]</span>
+          <p class="subtitle" style="margin: 0; color: var(--text); font-weight: 600;">
+            キックオフを終えた時、試してみたい方向性と最初の一歩が見えている状態
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: THEME -->
+    <section class="slide" data-slide="3">
+      <span class="slide-number">03 / 10</span>
+      <div style="width: 100%; max-width: 1000px;">
+        <span class="tag reveal reveal-1">Theme</span>
+        <div class="gap-md"></div>
+        <h1 class="reveal reveal-2"
+          style="font-size: clamp(2.8rem, 6vw, 5.5rem); border-left: 8px solid var(--accent); padding-left: 0.5em;">
+          「一度命じたら、<br><span class="accent-text">あとは任せろ。</span>」
+        </h1>
+        <div class="gap-md"></div>
+        <p class="subtitle reveal reveal-3" style="font-weight: 600;">
+          テーマ: 自律的に動くAIエージェント
+        </p>
+        <div class="gap-lg"></div>
+        <div class="card reveal reveal-4" style="border-style: dashed; max-width: 800px;">
+          <p
+            style="font-size: clamp(0.9rem, 1.2vw, 1.1rem); color: var(--text); font-family: var(--font-mono); margin-bottom: 1em; font-weight: 600; border-bottom: 1px solid var(--border); padding-bottom: 0.5em;">
+            // 自律性って、今回こういうこと
+          </p>
+          <ul
+            style="list-style-type: none; line-height: 2; font-size: clamp(1.1rem, 2vw, 1.4rem); color: var(--text-dim); font-weight: 500;">
+            <li><span style="color:var(--accent);">+</span> 一度お願いしたら、最後まで進められる。</li>
+            <li><span style="color:var(--accent);">+</span> 途中でエラーが起きても、自分で立て直そうとする。</li>
+            <li><span style="color:var(--accent);">+</span> 足りない情報があれば、自分で調べに行ける。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: EXAMPLES -->
+    <section class="slide" data-slide="4">
+      <span class="slide-number">04 / 10</span>
+      <div style="width: 100%; max-width: 1100px;">
+        <span class="tag reveal reveal-1">Examples</span>
+        <div class="gap-md"></div>
+        <h2 class="reveal reveal-2">たとえば、こういうもの</h2>
+        <div class="gap-lg"></div>
+        <div class="grid-3 reveal reveal-3">
+          <div class="metric-box" style="text-align: left;">
+            <p
+              style="font-family: var(--font-mono); font-size: clamp(0.8rem, 1vw, 0.95rem); color: var(--text-muted); margin-bottom: 1em; border-bottom: 1px dotted var(--border); padding-bottom: 0.5em;">
+              ID: EXAMPLE_01</p>
+            <h3 style="min-height: 2.5em; font-size: clamp(1.1rem, 1.6vw, 1.4rem);">
+              シラバス読込 &<br>勉強時間自動化
+            </h3>
+            <p
+              style="font-size: clamp(0.95rem, 1.2vw, 1.1rem); color: var(--text-dim); line-height: 1.6; min-height: 4em;">
+              シラバスや課題予定を読み取り、Google Calendarに勉強時間を自動で入れるエージェント。
+            </p>
+          </div>
+          <div class="metric-box" style="text-align: left;">
+            <p
+              style="font-family: var(--font-mono); font-size: clamp(0.8rem, 1vw, 0.95rem); color: var(--text-muted); margin-bottom: 1em; border-bottom: 1px dotted var(--border); padding-bottom: 0.5em;">
+              ID: EXAMPLE_02</p>
+            <h3 style="min-height: 2.5em; font-size: clamp(1.1rem, 1.6vw, 1.4rem);">
+              入社手続き &<br>オンボーディング自動化
+            </h3>
+            <p
+              style="font-size: clamp(0.95rem, 1.2vw, 1.1rem); color: var(--text-dim); line-height: 1.6; min-height: 4em;">
+              アカウント発行、資料配布、研修割り当てまで、新入社員の入社準備をまとめて進めるエージェント。
+            </p>
+          </div>
+          <div class="metric-box" style="text-align: left;">
+            <p
+              style="font-family: var(--font-mono); font-size: clamp(0.8rem, 1vw, 0.95rem); color: var(--text-muted); margin-bottom: 1em; border-bottom: 1px dotted var(--border); padding-bottom: 0.5em;">
+              ID: EXAMPLE_03</p>
+            <h3 style="min-height: 2.5em; font-size: clamp(1.1rem, 1.6vw, 1.4rem);">
+              製品デモ作成 &<br>動画生成
+            </h3>
+            <p
+              style="font-size: clamp(0.95rem, 1.2vw, 1.1rem); color: var(--text-dim); line-height: 1.6; min-height: 4em;">
+              製品URLと見せたいポイントを渡すだけで、ブラウザ操作から音声入りデモ動画作成まで進めるエージェント。
+            </p>
+          </div>
+        </div>
+        <div class="gap-md"></div>
+        <p class="reveal reveal-4"
+          style="font-size: clamp(1rem, 1.3vw, 1.2rem); color: var(--text-dim); font-weight: 500; font-family: var(--font-mono);">
+          > [NOTE] 用途は自由。コーディング / 業務自動化 / コンテンツ / リサーチ、何でもOK。
+        </p>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: RULES -->
+    <section class="slide" data-slide="5">
+      <span class="slide-number">05 / 10</span>
+      <div style="width: 100%; max-width: 1000px;">
+        <span class="tag reveal reveal-1">Rules</span>
+        <div class="gap-md"></div>
+        <h2 class="reveal reveal-2">ルール</h2>
+        <div class="gap-md"></div>
+        <div class="card reveal reveal-3">
+          <div class="rule-row">
+            <span class="rule-badge required">REQUIRED</span>
+            <p class="rule-text">
+              提出物: <strong>GitHub公開リポジトリ</strong> + <strong>デモ動画</strong>（3分以内）
+            </p>
+          </div>
+          <div class="rule-row">
+            <span class="rule-badge required">REQUIRED</span>
+            <p class="rule-text">
+              成果物: <strong>Claude Code Plugin Marketplace形式</strong>で公開
+              <span>（他の人がインストールして試せる形）</span>
+            </p>
+          </div>
+          <div class="rule-row">
+            <span class="rule-badge free">FREE</span>
+            <p class="rule-text">
+              開発ツール: 基本自由。<span>Claude Code, GPT, Gemini, Cursor, OpenClaw 等を自由に使ってOK</span>
+            </p>
+          </div>
+          <div class="rule-row">
+            <span class="rule-badge free">FREE</span>
+            <p class="rule-text">
+              用途・ドメイン: <span>制限なし。業務自動化 / コンテンツ / リサーチ、何でもOK</span>
+            </p>
+          </div>
+          <div class="rule-row">
+            <span class="rule-badge free">FREE</span>
+            <p class="rule-text">
+              参加形態: <strong>個人 or チーム</strong>（最大3名）
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: SCHEDULE -->
+    <section class="slide" data-slide="6">
+      <span class="slide-number">06 / 10</span>
+      <div style="width: 100%; max-width: 1000px;">
+        <span class="tag reveal reveal-1">Schedule</span>
+        <div class="gap-md"></div>
+        <h2 class="reveal reveal-2">スケジュール</h2>
+        <div class="gap-lg"></div>
+        <div class="timeline reveal reveal-3">
+          <div class="timeline-node">
+            <p class="date">3/7 SAT</p>
+            <div class="dot"></div>
+            <p class="event">開発スタート</p>
+          </div>
+          <div class="timeline-line"></div>
+          <div class="timeline-node">
+            <p class="date">3/22 SUN</p>
+            <div class="dot"></div>
+            <p class="event">23:59 締切</p>
+          </div>
+          <div class="timeline-line"></div>
+          <div class="timeline-node highlight">
+            <p class="date" style="color:var(--text); border-color:var(--text);">3/23 MON</p>
+            <div class="dot"></div>
+            <p class="event" style="font-weight:700;">Demo Day</p>
+          </div>
+        </div>
+        <div class="gap-lg"></div>
+        <div class="card card--hero reveal reveal-4" style="max-width: 860px; line-height: 1.6;">
+          <div
+            style="display: flex; align-items: baseline; gap: 1.2em; margin-bottom: 0.8em; border-bottom: 1px dotted var(--accent); padding-bottom: 0.5em;">
+            <h3 style="color: var(--accent);">Demo Day</h3>
+            <span
+              style="font-family: var(--font-mono); font-size: clamp(0.9rem, 1.2vw, 1.1rem); color: var(--text-dim);">@
+              GMO Yours（渋谷）</span>
+          </div>
+          <p class="subtitle" style="color: var(--text);">
+            渋谷GMO Yoursでファイナリストがライブデモ。<br>
+            審査員が実際に触り、フィードバックと採点を行います。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: JUDGING -->
+    <section class="slide" data-slide="7">
+      <span class="slide-number">07 / 10</span>
+      <div style="width: 100%; max-width: 1100px;">
+        <span class="tag reveal reveal-1">Judging</span>
+        <div class="gap-md"></div>
+        <h2 class="reveal reveal-2">審査基準</h2>
+        <div class="gap-lg"></div>
+        <div class="grid-3 reveal reveal-3">
+          <div class="metric-box">
+            <p class="value">40<span style="font-size: 0.45em; color: var(--text-muted); font-weight: 500;">%</span></p>
+            <p class="label">自律性 (Autonomy)</p>
+            <p class="desc">一度任せたら<br>追加指示なしでどこまで自走するか</p>
+          </div>
+          <div class="metric-box">
+            <p class="value">35<span style="font-size: 0.45em; color: var(--text-muted); font-weight: 500;">%</span></p>
+            <p class="label">クオリティ (Quality)</p>
+            <p class="desc">出力や体験が<br>実用レベルに達しているか</p>
+          </div>
+          <div class="metric-box">
+            <p class="value">25<span style="font-size: 0.45em; color: var(--text-muted); font-weight: 500;">%</span></p>
+            <p class="label">インパクト (Impact)</p>
+            <p class="desc">自分以外の人にも意味があり<br>広がった未来を想像できるか</p>
+          </div>
+        </div>
+        <div class="gap-md"></div>
+        <div class="reveal reveal-4"
+          style="font-family: var(--font-mono); font-size: clamp(0.9rem, 1.1vw, 1rem); color: var(--text-dim); border-left: 2px solid var(--accent); padding-left: 1em;">
+          [ EVALUATION METHOD ]<br>
+          各軸 1-5点で採点。合計スコアで順位決定。
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: PRIZES -->
+    <section class="slide" data-slide="8">
+      <span class="slide-number">08 / 10</span>
+      <div style="width: 100%; max-width: 1000px;">
+        <span class="tag reveal reveal-1">Prizes</span>
+        <div class="gap-md"></div>
+        <h2 class="reveal reveal-2">賞品</h2>
+        <div class="gap-md"></div>
+        <div class="prize-grid reveal reveal-4">
+          <div class="prize-card">
+            <p class="prize-rank">1st</p>
+            <p class="prize-name" style="font-family: var(--font-mono); font-size: 1.5rem;">Mac mini 1台</p>
+          </div>
+          <div class="prize-card">
+            <p class="prize-rank">2nd</p>
+            <p class="prize-name" style="font-family: var(--font-mono); font-size: 1.5rem;">Mac mini 1台</p>
+          </div>
+          <div class="prize-card">
+            <p class="prize-rank">3rd</p>
+            <p class="prize-name" style="font-family: var(--font-mono); font-size: 1.5rem;">Mac mini 1台</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: ACTIONS -->
+    <section class="slide" data-slide="9">
+      <span class="slide-number">09 / 10</span>
+      <div style="width: 100%; max-width: 1000px;">
+        <span class="tag reveal reveal-1">Next Steps</span>
+        <div class="gap-md"></div>
+        <h2 class="reveal reveal-2">今すぐやること</h2>
+        <div class="gap-md"></div>
+        <div class="card reveal reveal-3">
+          <div class="action-item">
+            <span class="action-num">01</span>
+            <div class="action-content">
+              <h3>自己紹介を投稿する</h3>
+              <p>Discord <strong style="color: var(--text);">👋-自己紹介・意気込み</strong> に投稿（まだの人）</p>
+            </div>
+          </div>
+          <div class="action-item">
+            <span class="action-num">02</span>
+            <div class="action-content">
+              <h3>開発スレッドを立てる</h3>
+              <p>Discord <strong style="color: var(--text);">📋-times</strong> フォーラムに自分のスレッドを作る</p>
+            </div>
+          </div>
+          <div class="action-item">
+            <span class="action-num">03</span>
+            <div class="action-content">
+              <h3>「何を作るか」を1行で書く</h3>
+              <p>今夜中に <strong style="color: var(--text);">📋-times</strong> へ。仮テーマでOK。明日から手が動く状態にする</p>
+            </div>
+          </div>
+        </div>
+        <div class="gap-md"></div>
+        <div class="grid-2 reveal reveal-4">
+          <div class="metric-box" style="text-align: left; padding: 1.5rem;">
+            <p
+              style="font-family: var(--font-mono); font-size: clamp(0.75rem, 1vw, 0.9rem); color: var(--accent); margin-bottom: 0.5em; letter-spacing: 0.1em;">
+              [ TEAM MATCHING ]</p>
+            <p
+              style="font-size: clamp(0.95rem, 1.2vw, 1.1rem); color: var(--text-dim); line-height: 1.6; font-weight: 500;">
+              チームを組みたい人は<br>Discordで声をかけてOK
+            </p>
+          </div>
+          <div class="metric-box" style="text-align: left; padding: 1.5rem;">
+            <p
+              style="font-family: var(--font-mono); font-size: clamp(0.75rem, 1vw, 0.9rem); color: var(--accent); margin-bottom: 0.5em; letter-spacing: 0.1em;">
+              [ SUPPORT ]</p>
+            <p
+              style="font-size: clamp(0.95rem, 1.2vw, 1.1rem); color: var(--text-dim); line-height: 1.6; font-weight: 500;">
+              困ったら <strong>❓-質問・相談</strong> で質問<br>
+              運営がサポートします
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: CLOSING -->
+    <section class="slide" data-slide="10">
+      <span class="slide-number">10 / 10</span>
+      <div style="width: 100%; max-width: 1000px;">
+        <p class="closing-quote reveal reveal-1">
+          2週間後、<br><span class="accent-text">動くものを持って会おう。</span>
+        </p>
+        <p class="closing-sub reveal reveal-2">
+          録画アーカイブは後日Discordで共有します。<br>
+          質問があればいつでも Discord の ❓-質問・相談 へ。
+        </p>
+        <div class="gap-lg"></div>
+        <div class="reveal reveal-3"
+          style="font-family: var(--font-mono); font-size: clamp(0.9rem, 1.2vw, 1.1rem); color: var(--text); display: inline-block; border: 1px solid var(--border); padding: 0.5em 1em; background: var(--bg-surface);">
+          AGI Lab &mdash; AI Agent Hackathon 2026
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="progress" id="progress"></div>
+  <div class="nav-hint">&#8592; &#8594; or click to navigate</div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const progress = document.getElementById('progress');
+    let current = 0;
+    const total = slides.length;
+
+    function goTo(n) {
+      if (n < 0 || n >= total) return;
+      slides[current].classList.remove('active');
+      slides[current].querySelectorAll('.reveal').forEach(el => {
+        el.style.animation = 'none';
+        el.offsetHeight;
+        el.style.animation = '';
+        el.style.opacity = '0';
+      });
+      current = n;
+      slides[current].classList.add('active');
+      slides[current].querySelectorAll('.reveal').forEach(el => {
+        el.style.opacity = '';
+      });
+      progress.style.width = ((current + 1) / total * 100) + '%';
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
+      if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+      if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (e.target.tagName.toLowerCase() === 'a') return;
+      if (e.clientX < window.innerWidth / 3) goTo(current - 1);
+      else goTo(current + 1);
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+    document.addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) goTo(current + 1);
+        else goTo(current - 1);
+      }
+    });
+
+    progress.style.width = (1 / total * 100) + '%';
+  </script>
+
+</body>
+
+</html>
