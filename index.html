@@ -425,6 +425,12 @@
       border-color: var(--accent);
     }
 
+    .rule-badge.recommend {
+      background: transparent;
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
     .rule-badge.free {
       background: transparent;
       color: var(--text-dim);
@@ -537,6 +543,14 @@
       color: var(--text);
       margin-top: 0.5em;
       font-weight: 600;
+    }
+
+    .prize-bonus {
+      font-size: clamp(0.9rem, 1.1vw, 1rem);
+      color: var(--accent);
+      margin-top: 0.9em;
+      font-weight: 600;
+      line-height: 1.4;
     }
 
     /* === CLOSING === */
@@ -839,14 +853,20 @@
           <div class="rule-row">
             <span class="rule-badge required">REQUIRED</span>
             <p class="rule-text">
-              提出物: <strong>GitHub公開リポジトリ</strong> + <strong>デモ動画</strong>（3分以内）
+              提出物 ①: <strong>GitHub公開リポジトリ</strong>
             </p>
           </div>
           <div class="rule-row">
             <span class="rule-badge required">REQUIRED</span>
             <p class="rule-text">
-              成果物: <strong>Claude Code Plugin Marketplace形式</strong>で公開
-              <span>（他の人がインストールして試せる形）</span>
+              提出物 ②: <strong>デモ動画</strong>（3分以内）
+            </p>
+          </div>
+          <div class="rule-row">
+            <span class="rule-badge recommend">RECOMMEND</span>
+            <p class="rule-text">
+              公開形式: <strong>Claude Code Plugin Marketplace形式</strong>
+              <span>だと、他の人がインストールして試しやすい</span>
             </p>
           </div>
           <div class="rule-row">
@@ -961,6 +981,7 @@
           <div class="prize-card">
             <p class="prize-rank">1st</p>
             <p class="prize-name" style="font-family: var(--font-mono); font-size: 1.5rem;">Mac mini 1台</p>
+            <p class="prize-bonus">+ AGIラボ永年会員</p>
           </div>
           <div class="prize-card">
             <p class="prize-rank">2nd</p>
