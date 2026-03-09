@@ -1,29 +1,38 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AGI Lab - AI Agent Hackathon 2026 FAQ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <style>
     :root {
-      --bg: #fafaf9;
-      --surface: rgba(255, 255, 255, 0.9);
-      --card: #ffffff;
+      --bg: #FAFAF9;
+      --bg-surface: #FFFFFF;
+      --bg-card: rgba(255, 255, 255, 0.85);
+      --border: #E5E5E5;
+      --border-accent: #00A3FF;
       --text: #171717;
       --text-dim: #525252;
-      --border: #e5e5e5;
-      --accent: #00a3ff;
-      --accent-soft: rgba(0, 163, 255, 0.08);
+      --text-muted: #A3A3A3;
+      --accent: #00A3FF;
+      --accent-glow: rgba(0, 163, 255, 0.08);
       --font-display: 'Syne', sans-serif;
       --font-body: 'Noto Sans JP', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
 
-    * {
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     html {
@@ -31,119 +40,269 @@
     }
 
     body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: var(--font-body);
+      background: var(--bg);
       color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(0, 163, 255, 0.10), transparent 32%),
-        radial-gradient(circle at bottom right, rgba(0, 163, 255, 0.06), transparent 28%),
-        var(--bg);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      position: relative;
     }
 
+    /* === DOT GRID & STRUCTURAL LINES === */
     body::before {
-      content: "";
+      content: '';
       position: fixed;
       inset: 0;
-      background-image: radial-gradient(#e7e5e4 1px, transparent 1px);
+      background-image: radial-gradient(var(--border) 1px, transparent 1px);
       background-size: 20px 20px;
+      z-index: 0;
       pointer-events: none;
-      opacity: 0.7;
     }
 
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, var(--border) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+      background-size: 20vw 20vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .frame-border {
+      position: fixed;
+      inset: 2rem;
+      border: 1px dotted var(--border-accent);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .frame-border::before,
+    .frame-border::after {
+      content: '+';
+      position: absolute;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .frame-border::before {
+      top: -0.5rem;
+      left: -0.4rem;
+    }
+
+    .frame-border::after {
+      bottom: -0.5rem;
+      right: -0.4rem;
+    }
+
+    /* === LAYOUT === */
     .shell {
       position: relative;
       z-index: 1;
-      max-width: 1080px;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 32px 20px 80px;
+      padding: 6rem 2rem 8rem;
     }
 
-    .hero {
-      border: 1px solid var(--accent);
-      background: var(--surface);
-      backdrop-filter: blur(12px);
-      padding: 28px;
-      margin-bottom: 24px;
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.06);
-    }
-
-    .eyebrow {
-      display: inline-block;
-      margin-bottom: 14px;
-      padding: 6px 10px;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      font-family: var(--font-mono);
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      background: #fff;
-    }
-
+    /* === TYPOGRAPHY === */
     h1 {
-      margin: 0 0 10px;
-      font-family: var(--font-display);
-      font-size: clamp(34px, 5vw, 62px);
-      line-height: 1;
+      font-family: var(--font-body);
+      font-weight: 900;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      line-height: 1.1;
       letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+
+    h2 {
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    h2::before {
+      content: "";
+      display: block;
+      width: 4px;
+      height: 1.1em;
+      background: var(--accent);
     }
 
     .lead {
-      margin: 0;
-      max-width: 760px;
+      font-size: clamp(1.05rem, 1.8vw, 1.25rem);
       color: var(--text-dim);
-      font-size: 16px;
       line-height: 1.8;
+      font-weight: 500;
+    }
+
+    .accent-text {
+      background: linear-gradient(135deg, #00E5FF, #007AFF, #AF52DE);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: var(--accent);
+    }
+
+    .tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: clamp(0.8rem, 1.1vw, 1rem);
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-accent);
+      padding: 0.3em 1em;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .tag::before {
+      content: '';
+      position: absolute;
+      left: -4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 2px;
+      height: 60%;
+      background: var(--accent);
+    }
+
+    code {
+      display: inline-block;
+      font-family: var(--font-mono);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      padding: 0.2em 0.5em;
+      border-radius: 4px;
+      font-size: 0.9em;
+      font-weight: 500;
+    }
+
+    .highlight-word {
+      font-weight: 700;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 2px;
+    }
+
+    /* === CARDS & SECTIONS === */
+    .hero {
+      background: var(--accent-glow);
+      border: 1px solid var(--accent);
+      padding: clamp(2rem, 4vh, 3.5rem) clamp(2.5rem, 4vw, 4rem);
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 1px dotted var(--border-accent);
+      pointer-events: none;
+      opacity: 0.5;
     }
 
     .nav {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      margin: 20px 0 28px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 40px 0 60px;
     }
 
     .nav a {
       display: block;
-      padding: 14px 16px;
+      text-align: center;
+      padding: 16px 20px;
+      background: var(--bg-surface);
       border: 1px solid var(--border);
-      background: #fff;
       color: var(--text);
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 700;
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .nav a::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width 0.2s ease;
     }
 
     .nav a:hover {
+      background: var(--bg);
       border-color: var(--accent);
-      background: var(--accent-soft);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .nav a:hover::before {
+      width: 100%;
     }
 
     .section {
-      margin-top: 36px;
-    }
-
-    .section h2 {
-      margin: 0 0 14px;
-      font-size: 24px;
-      line-height: 1.2;
+      margin-top: 80px;
     }
 
     .faq {
       display: grid;
-      gap: 14px;
+      gap: 20px;
     }
 
     .item {
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      background: var(--card);
-      padding: 20px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+      padding: clamp(1.5rem, 3vh, 2rem) clamp(1.5rem, 3vw, 2.5rem);
+      backdrop-filter: blur(16px);
+      position: relative;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .item::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 1px dotted var(--border);
+      pointer-events: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .item:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .item:hover::after {
+      border-color: rgba(0, 163, 255, 0.3);
     }
 
     .item h3 {
-      margin: 0 0 10px;
-      font-size: 18px;
+      margin: 0 0 16px;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+      color: var(--text);
       line-height: 1.5;
     }
 
@@ -152,63 +311,111 @@
       margin: 0;
       color: var(--text-dim);
       line-height: 1.8;
-      font-size: 15px;
+      font-size: clamp(1rem, 1.3vw, 1.1rem);
+      font-weight: 500;
     }
 
-    .item p + p,
-    .item p + ul,
-    .item ul + p {
-      margin-top: 10px;
+    .item p+p,
+    .item p+ul,
+    .item ul+p {
+      margin-top: 16px;
     }
 
     .item ul {
-      margin: 10px 0 0 18px;
+      margin: 16px 0 0 24px;
       padding: 0;
     }
 
-    .links {
-      display: grid;
-      gap: 10px;
+    .item li {
+      margin-bottom: 10px;
     }
 
-    .links a {
+    .item li::marker {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .links-grid a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1.5rem 2rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
       color: var(--accent);
       text-decoration: none;
-      word-break: break-all;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 1.05rem;
+      transition: all 0.2s ease;
+      position: relative;
     }
 
-    .links a:hover {
-      text-decoration: underline;
+    .links-grid a::before {
+      content: "↗";
+      font-size: 1.2em;
+    }
+
+    .links-grid a:hover {
+      border-color: var(--accent);
+      background: var(--accent-glow);
+      transform: translateY(-2px);
     }
 
     .footer {
-      margin-top: 40px;
-      padding-top: 18px;
-      border-top: 1px solid var(--border);
-      color: var(--text-dim);
-      font-size: 14px;
+      margin-top: 100px;
+      padding-top: 2rem;
+      border-top: 1px dotted var(--border);
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 500;
       line-height: 1.8;
+      text-align: center;
+      position: relative;
+      z-index: 1;
     }
 
-    @media (max-width: 640px) {
+    .footer code {
+      color: var(--text-dim);
+      background: var(--bg-surface);
+      border-color: var(--border);
+    }
+
+    @media (max-width: 768px) {
       .shell {
-        padding: 20px 14px 56px;
+        padding: 4rem 1.5rem 6rem;
       }
 
-      .hero,
+      .frame-border {
+        inset: 1rem;
+      }
+
+      .hero {
+        padding: 2rem 1.5rem;
+      }
+
       .item {
-        padding: 18px;
+        padding: 1.5rem;
       }
     }
   </style>
 </head>
+
 <body>
+  <div class="frame-border"></div>
+
   <main class="shell">
     <section class="hero">
-      <div class="eyebrow">AGI LAB HACKATHON 2026</div>
+      <span class="tag">AGI LAB HACKATHON 2026</span>
       <h1>FAQ</h1>
       <p class="lead">
-        AIエージェント ハッカソン 2026 の参加者向けよくある質問です。
+        AIエージェント ハッカソン 2026 の参加者向けよくある質問です。<br>
         迷ったときはまずここを見て、必要なら Discord の <code>❓-質問・相談</code> で気軽に聞いてください。
       </p>
     </section>
@@ -233,7 +440,8 @@
         </article>
         <article class="item">
           <h3>Q. 何を作ればいいですか？</h3>
-          <p>A. <code>自律的に動くAIエージェント</code> がテーマです。一度お願いしたら最後まで進められる、途中で立て直せる、足りない情報を自分で集めにいける、といった性質があると今回のテーマに合いやすいです。</p>
+          <p>A. <span class="highlight-word">自律的に動くAIエージェント</span>
+            がテーマです。一度お願いしたら最後まで進められる、途中で立て直せる、足りない情報を自分で集めにいける、といった性質があると今回のテーマに合いやすいです。</p>
         </article>
         <article class="item">
           <h3>Q. 今の時点で完成形まで決めていないとダメですか？</h3>
@@ -263,7 +471,7 @@
         </article>
         <article class="item">
           <h3>Q. GitHub repo は公開にしないとダメですか？</h3>
-          <p>A. はい。最終提出時点では、作品の中身が分かる <code>GitHub公開 repo</code> での提出をお願いしています。</p>
+          <p>A. はい。最終提出時点では、作品の中身が分かる <span class="highlight-word">GitHub公開 repo</span> での提出をお願いしています。</p>
         </article>
         <article class="item">
           <h3>Q. デモ動画はどこに置けばいいですか？</h3>
@@ -271,7 +479,8 @@
         </article>
         <article class="item">
           <h3>Q. どんな形式の repo にすればいいですか？</h3>
-          <p>A. 作品の中身が分かる <code>GitHub公開 repo</code> で大丈夫です。そのうえで、Claude Code で他の人がすぐ試せる形にしたい場合は、<code>Plugin Marketplace形式</code> がおすすめです。</p>
+          <p>A. 作品の中身が分かる <code>GitHub公開 repo</code> で大丈夫です。そのうえで、Claude Code
+            で他の人がすぐ試せる形にしたい場合は、<code>Plugin Marketplace形式</code> がおすすめです。</p>
           <p>最低限、<code>README</code>、<code>実装または SKILL.md</code>、<code>試し方</code> が入っていると伝わりやすいです。</p>
         </article>
         <article class="item">
@@ -280,7 +489,7 @@
         </article>
         <article class="item">
           <h3>Q. Demo Day では全員が発表しますか？</h3>
-          <p>A. すべての提出作品を見たうえで、<code>ファイナリスト5チーム</code> が Demo Day で発表する想定です。</p>
+          <p>A. すべての提出作品を見たうえで、<span class="highlight-word">ファイナリスト5チーム</span> が Demo Day で発表する想定です。</p>
         </article>
         <article class="item">
           <h3>Q. 審査員は誰ですか？</h3>
@@ -310,8 +519,9 @@
         </article>
         <article class="item">
           <h3>Q. 1チームで複数のSkillを提出してもいいですか？</h3>
-          <p>A. 提出は <code>1チームにつき1作品まで</code> でお願いします。そのため、チームとして別々の複数作品を出す形は不可です。</p>
-          <p>一方で、<code>1つの作品としてまとまっている</code> のであれば、その中に複数のSkillを含める形は問題ありません。最終的に、<code>1つのGitHub公開 repo</code> と <code>1本のデモ動画</code> にまとまっていることを目安にしてください。</p>
+          <p>A. 提出は <span class="highlight-word">1チームにつき1作品まで</span> でお願いします。そのため、チームとして別々の複数作品を出す形は不可です。</p>
+          <p>一方で、<code>1つの作品としてまとまっている</code> のであれば、その中に複数のSkillを含める形は問題ありません。最終的に、<code>1つのGitHub公開 repo</code> と
+            <code>1本のデモ動画</code> にまとまっていることを目安にしてください。</p>
         </article>
         <article class="item">
           <h3>Q. チーム内でそれぞれ別のSkillを担当しても大丈夫ですか？</h3>
@@ -322,18 +532,19 @@
 
     <section id="links" class="section">
       <h2>参考リンク</h2>
-      <div class="faq">
-        <article class="item links">
-          <a href="./" target="_blank" rel="noopener noreferrer">kickoffスライド</a>
-          <a href="https://github.com/KaishuShito/agi-lab-skills-marketplace" target="_blank" rel="noopener noreferrer">テンプレ repo</a>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSd7x_-z19TFii6kiB5nOdhcPseVdfDVWGjjkUdl6qliUXBKzw/viewform" target="_blank" rel="noopener noreferrer">提出フォーム</a>
-        </article>
+      <div class="links-grid">
+        <a href="./" target="_blank" rel="noopener noreferrer">kickoffスライド</a>
+        <a href="https://github.com/KaishuShito/agi-lab-skills-marketplace" target="_blank"
+          rel="noopener noreferrer">テンプレ repo</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSd7x_-z19TFii6kiB5nOdhcPseVdfDVWGjjkUdl6qliUXBKzw/viewform"
+          target="_blank" rel="noopener noreferrer">提出フォーム</a>
       </div>
     </section>
 
     <footer class="footer">
-      この FAQ は随時更新されます。迷うことがあれば、Discord の <code>❓-質問・相談</code> で気軽に聞いてください。
+      この FAQ は随時更新されます。<br>迷うことがあれば、Discord の <code>❓-質問・相談</code> で気軽に聞いてください。
     </footer>
   </main>
 </body>
+
 </html>
