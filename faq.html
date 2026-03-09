@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGI Lab - AI Agent Hackathon 2026 FAQ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fafaf9;
+      --surface: rgba(255, 255, 255, 0.9);
+      --card: #ffffff;
+      --text: #171717;
+      --text-dim: #525252;
+      --border: #e5e5e5;
+      --accent: #00a3ff;
+      --accent-soft: rgba(0, 163, 255, 0.08);
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'Noto Sans JP', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-body);
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(0, 163, 255, 0.10), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(0, 163, 255, 0.06), transparent 28%),
+        var(--bg);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(#e7e5e4 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+
+    .hero {
+      border: 1px solid var(--accent);
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.06);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 6px 10px;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: #fff;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 5vw, 62px);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .lead {
+      margin: 0;
+      max-width: 760px;
+      color: var(--text-dim);
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .nav {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin: 20px 0 28px;
+    }
+
+    .nav a {
+      display: block;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .nav a:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .section {
+      margin-top: 36px;
+    }
+
+    .section h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    .faq {
+      display: grid;
+      gap: 14px;
+    }
+
+    .item {
+      border: 1px solid var(--border);
+      background: var(--card);
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    }
+
+    .item h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+
+    .item p,
+    .item li {
+      margin: 0;
+      color: var(--text-dim);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .item p + p,
+    .item p + ul,
+    .item ul + p {
+      margin-top: 10px;
+    }
+
+    .item ul {
+      margin: 10px 0 0 18px;
+      padding: 0;
+    }
+
+    .links {
+      display: grid;
+      gap: 10px;
+    }
+
+    .links a {
+      color: var(--accent);
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
+
+    .footer {
+      margin-top: 40px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        padding: 20px 14px 56px;
+      }
+
+      .hero,
+      .item {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">AGI LAB HACKATHON 2026</div>
+      <h1>FAQ</h1>
+      <p class="lead">
+        AIエージェント ハッカソン 2026 の参加者向けよくある質問です。
+        迷ったときはまずここを見て、必要なら Discord の <code>❓-質問・相談</code> で気軽に聞いてください。
+      </p>
+    </section>
+
+    <nav class="nav">
+      <a href="#basics">基本</a>
+      <a href="#submission">提出</a>
+      <a href="#team">チーム参加</a>
+      <a href="#links">参考リンク</a>
+    </nav>
+
+    <section id="basics" class="section">
+      <h2>基本</h2>
+      <div class="faq">
+        <article class="item">
+          <h3>Q. 非エンジニアでも参加できますか？</h3>
+          <p>A. はい。初心者歓迎です。まずはキックオフで全体像をつかみ、<code>何を任せたいか</code> を1つ決めるところから始めれば大丈夫です。</p>
+        </article>
+        <article class="item">
+          <h3>Q. 使うツールに制限はありますか？</h3>
+          <p>A. 基本自由です。Claude Code, GPT, Gemini, Cursor, OpenClaw など、使いたいものを自由に組み合わせてOKです。</p>
+        </article>
+        <article class="item">
+          <h3>Q. 何を作ればいいですか？</h3>
+          <p>A. <code>自律的に動くAIエージェント</code> がテーマです。一度お願いしたら最後まで進められる、途中で立て直せる、足りない情報を自分で集めにいける、といった性質があると今回のテーマに合いやすいです。</p>
+        </article>
+        <article class="item">
+          <h3>Q. 今の時点で完成形まで決めていないとダメですか？</h3>
+          <p>A. ダメではありません。キックオフを終えた時点で、<code>試してみたい方向性</code> と <code>最初の一歩</code> が見えていればOKです。</p>
+        </article>
+        <article class="item">
+          <h3>Q. キックオフを見逃しても参加できますか？</h3>
+          <p>A. はい。録画アーカイブと参加者ガイドを見て、<code>👋-自己紹介・意気込み</code> と <code>📋-times</code> から始めてもらえればOKです。</p>
+        </article>
+        <article class="item">
+          <h3>Q. どこで質問すればいいですか？</h3>
+          <p>A. <code>❓-質問・相談</code> で聞いてください。進捗共有は <code>📋-times</code>、もくもく作業は <code>🔇-もくもく作業</code> を使う想定です。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="submission" class="section">
+      <h2>提出</h2>
+      <div class="faq">
+        <article class="item">
+          <h3>Q. 提出方法は何ですか？</h3>
+          <p>A. 現時点では次の2つを提出物の基本と考えています。</p>
+          <ul>
+            <li><code>作品の Skills / コード / README を入れた GitHub公開 repo</code></li>
+            <li><code>3分以内のデモ動画</code></li>
+          </ul>
+        </article>
+        <article class="item">
+          <h3>Q. GitHub repo は公開にしないとダメですか？</h3>
+          <p>A. はい。最終提出時点では、作品の中身が分かる <code>GitHub公開 repo</code> での提出をお願いしています。</p>
+        </article>
+        <article class="item">
+          <h3>Q. デモ動画はどこに置けばいいですか？</h3>
+          <p>A. <code>なんでもOK</code> です。共有しやすく、審査側が見られる形であれば大丈夫です。</p>
+        </article>
+        <article class="item">
+          <h3>Q. どんな形式の repo にすればいいですか？</h3>
+          <p>A. 作品の中身が分かる <code>GitHub公開 repo</code> で大丈夫です。そのうえで、Claude Code で他の人がすぐ試せる形にしたい場合は、<code>Plugin Marketplace形式</code> がおすすめです。</p>
+          <p>最低限、<code>README</code>、<code>実装または SKILL.md</code>、<code>試し方</code> が入っていると伝わりやすいです。</p>
+        </article>
+        <article class="item">
+          <h3>Q. GitHubに慣れていなくても大丈夫ですか？</h3>
+          <p>A. 大丈夫です。作品の Skills / コード / README が入った GitHub 公開 repo としてまとめてもOKですし、テンプレ repo を fork して進めてもOKです。</p>
+        </article>
+        <article class="item">
+          <h3>Q. Demo Day では全員が発表しますか？</h3>
+          <p>A. すべての提出作品を見たうえで、<code>ファイナリスト5チーム</code> が Demo Day で発表する想定です。</p>
+        </article>
+        <article class="item">
+          <h3>Q. 審査員は誰ですか？</h3>
+          <p>A. 審査員は現在最終調整中です。確定次第、Discordでご案内します。</p>
+        </article>
+        <article class="item">
+          <h3>Q. 審査基準は何ですか？</h3>
+          <ul>
+            <li><code>自律性 40%</code></li>
+            <li><code>クオリティ 35%</code></li>
+            <li><code>インパクト 25%</code></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="team" class="section">
+      <h2>チーム参加</h2>
+      <div class="faq">
+        <article class="item">
+          <h3>Q. チーム参加はできますか？</h3>
+          <p>A. はい。個人でもチームでも進めて大丈夫です。作品として分かりやすい形でまとまっていれば問題ありません。途中でチーム化したりメンバー変更があった場合は、運営に一言共有してください。</p>
+        </article>
+        <article class="item">
+          <h3>Q. チーム提出はどうすればいいですか？</h3>
+          <p>A. <code>代表者1名</code> の提出でOKです。</p>
+        </article>
+        <article class="item">
+          <h3>Q. 1チームで複数のSkillを提出してもいいですか？</h3>
+          <p>A. 提出は <code>1チームにつき1作品まで</code> でお願いします。そのため、チームとして別々の複数作品を出す形は不可です。</p>
+          <p>一方で、<code>1つの作品としてまとまっている</code> のであれば、その中に複数のSkillを含める形は問題ありません。最終的に、<code>1つのGitHub公開 repo</code> と <code>1本のデモ動画</code> にまとまっていることを目安にしてください。</p>
+        </article>
+        <article class="item">
+          <h3>Q. チーム内でそれぞれ別のSkillを担当しても大丈夫ですか？</h3>
+          <p>A. はい。チーム内で分担して進めること自体は問題ありません。ただし、最終提出は <code>1つの作品</code> として伝わる形にまとめてください。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="links" class="section">
+      <h2>参考リンク</h2>
+      <div class="faq">
+        <article class="item links">
+          <a href="./" target="_blank" rel="noopener noreferrer">kickoffスライド</a>
+          <a href="https://github.com/KaishuShito/agi-lab-skills-marketplace" target="_blank" rel="noopener noreferrer">テンプレ repo</a>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSd7x_-z19TFii6kiB5nOdhcPseVdfDVWGjjkUdl6qliUXBKzw/viewform" target="_blank" rel="noopener noreferrer">提出フォーム</a>
+        </article>
+      </div>
+    </section>
+
+    <footer class="footer">
+      この FAQ は随時更新されます。迷うことがあれば、Discord の <code>❓-質問・相談</code> で気軽に聞いてください。
+    </footer>
+  </main>
+</body>
+</html>
