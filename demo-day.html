@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGI Lab - AI Agent Hackathon 2026 Demo Day</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FAFAF9;
+      --bg-surface: #FFFFFF;
+      --bg-card: rgba(255, 255, 255, 0.85);
+      --border: #E5E5E5;
+      --border-accent: #00A3FF;
+      --text: #171717;
+      --text-dim: #525252;
+      --text-muted: #A3A3A3;
+      --accent: #00A3FF;
+      --accent-glow: rgba(0, 163, 255, 0.08);
+      --gold: #D4AF37;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'Noto Sans JP', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(var(--border) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, var(--border) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+      background-size: 20vw 20vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .frame-border {
+      position: fixed;
+      inset: 2rem;
+      border: 1px dotted var(--border-accent);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .frame-border::before,
+    .frame-border::after {
+      content: '+';
+      position: absolute;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .frame-border::before {
+      top: -0.5rem;
+      left: -0.4rem;
+    }
+
+    .frame-border::after {
+      bottom: -0.5rem;
+      right: -0.4rem;
+    }
+
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: clamp(3rem, 6vh, 6rem) clamp(4rem, 8vw, 10rem);
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    .slide-number {
+      position: absolute;
+      top: clamp(1.5rem, 3vh, 2.5rem);
+      right: clamp(2rem, 4vw, 4rem);
+      font-family: var(--font-mono);
+      font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--accent);
+    }
+
+    h1 {
+      font-family: var(--font-body);
+      font-weight: 900;
+      font-size: clamp(3rem, 7vw, 7rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+
+    h2 {
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: clamp(2.2rem, 4.5vw, 4rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    h3 {
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: clamp(1.3rem, 2.2vw, 2rem);
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .subtitle {
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: clamp(1.05rem, 1.8vw, 1.55rem);
+      color: var(--text-dim);
+      letter-spacing: 0.02em;
+      line-height: 1.7;
+    }
+
+    .accent-text {
+      background: linear-gradient(135deg, #00E5FF, #007AFF, #AF52DE);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: var(--accent);
+    }
+
+    .tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: clamp(0.8rem, 1.1vw, 1rem);
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-accent);
+      padding: 0.3em 1em;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      position: relative;
+    }
+
+    .tag::before {
+      content: '';
+      position: absolute;
+      left: -4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 2px;
+      height: 60%;
+      background: var(--accent);
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: clamp(2rem, 4vh, 3.5rem) clamp(2.5rem, 4vw, 4rem);
+      backdrop-filter: blur(16px);
+      width: 100%;
+      max-width: 1120px;
+      position: relative;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 1px dotted var(--border);
+      pointer-events: none;
+    }
+
+    .card--accent {
+      border-top: 4px solid var(--accent);
+      border-bottom: 4px solid var(--accent);
+    }
+
+    .card--hero {
+      border: 1px solid var(--accent);
+      background: var(--accent-glow);
+    }
+
+    .title-slide {
+      text-align: left;
+      align-items: flex-start;
+    }
+
+    .title-slide .logo-area {
+      margin-bottom: clamp(2rem, 4vh, 3.5rem);
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--text);
+      display: inline-block;
+    }
+
+    .title-slide .logo-text {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+      color: var(--text);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .date-info {
+      font-family: var(--font-mono);
+      font-size: clamp(1rem, 1.4vw, 1.3rem);
+      color: var(--accent);
+      letter-spacing: 0.06em;
+      margin-top: clamp(1.5rem, 3vh, 2.5rem);
+      border: 1px solid var(--accent);
+      padding: 0.5em 1em;
+      display: inline-block;
+    }
+
+    .network-bg {
+      position: absolute;
+      right: -10%;
+      top: -10%;
+      width: 60%;
+      height: 120%;
+      opacity: 0.05;
+      pointer-events: none;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g stroke="%23171717" stroke-width="0.2"><line x1="10" y1="10" x2="50" y2="50"/><line x1="50" y1="50" x2="90" y2="20"/><line x1="50" y1="50" x2="70" y2="90"/><line x1="10" y1="90" x2="50" y2="50"/><circle cx="10" cy="10" r="1" fill="%2300A3FF"/><circle cx="50" cy="50" r="1.5" fill="%2300A3FF"/><circle cx="90" cy="20" r="1" fill="%2300A3FF"/><circle cx="70" cy="90" r="1" fill="%2300A3FF"/><circle cx="10" cy="90" r="1" fill="%2300A3FF"/></g></svg>');
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 1.8rem);
+      width: 100%;
+      max-width: 1120px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(1rem, 2vw, 1.8rem);
+      width: 100%;
+      max-width: 1120px;
+    }
+
+    .metric-box,
+    .person-card,
+    .mini-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: clamp(1.4rem, 2.6vh, 2.4rem) clamp(1.4rem, 2.4vw, 2.2rem);
+      position: relative;
+    }
+
+    .person-card {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .metric-box::before,
+    .person-card::before,
+    .mini-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1.2rem;
+      height: 1.2rem;
+      border-top: 2px solid var(--accent);
+      border-left: 2px solid var(--accent);
+    }
+
+    .metric-box .value {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 5vw, 4.8rem);
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .metric-box .label {
+      font-size: clamp(1rem, 1.5vw, 1.3rem);
+      color: var(--text);
+      margin-top: 0.6em;
+      font-weight: 700;
+    }
+
+    .metric-box .desc {
+      font-size: clamp(0.9rem, 1.15vw, 1rem);
+      color: var(--text-dim);
+      margin-top: 0.9em;
+      line-height: 1.6;
+    }
+
+    .rule-row,
+    .agenda-row,
+    .status-row {
+      display: flex;
+      gap: clamp(1rem, 1.6vw, 1.6rem);
+      align-items: baseline;
+      padding: clamp(0.95rem, 1.5vh, 1.3rem) 0;
+      border-bottom: 1px dotted var(--border);
+    }
+
+    .rule-row:last-child,
+    .agenda-row:last-child,
+    .status-row:last-child {
+      border-bottom: none;
+    }
+
+    .rule-badge,
+    .agenda-time,
+    .state-badge {
+      font-family: var(--font-mono);
+      font-size: clamp(0.78rem, 1vw, 0.92rem);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+
+    .rule-badge {
+      padding: 0.35em 0.85em;
+      border: 1px solid var(--text);
+    }
+
+    .rule-badge.required,
+    .state-badge {
+      background: var(--accent);
+      color: var(--bg-surface);
+      border-color: var(--accent);
+    }
+
+    .rule-badge.recommend {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .rule-badge.free {
+      color: var(--text-dim);
+      border-color: var(--border);
+    }
+
+    .agenda-time {
+      color: var(--accent);
+      min-width: 7em;
+      padding-bottom: 0.25em;
+      border-bottom: 1px solid var(--accent);
+    }
+
+    .rule-text,
+    .agenda-text,
+    .status-text {
+      font-size: clamp(1rem, 1.45vw, 1.3rem);
+      line-height: 1.6;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .rule-text span,
+    .agenda-text span,
+    .status-text span {
+      color: var(--text-dim);
+      font-size: 0.94em;
+      font-weight: 400;
+    }
+
+    .person-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(1rem, 2vw, 1.8rem);
+      width: 100%;
+      max-width: 1120px;
+    }
+
+    .person-role {
+      font-family: var(--font-mono);
+      font-size: clamp(0.78rem, 1vw, 0.92rem);
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.8em;
+      text-transform: uppercase;
+    }
+
+    .person-name {
+      font-size: clamp(1.35rem, 2vw, 1.8rem);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .person-title {
+      margin-top: 0.35rem;
+      font-size: clamp(0.92rem, 1.15vw, 1.02rem);
+      color: var(--text-dim);
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .person-handle {
+      margin-top: 0.45rem;
+      font-family: var(--font-mono);
+      font-size: clamp(0.78rem, 0.95vw, 0.9rem);
+      color: var(--accent);
+      letter-spacing: 0.04em;
+    }
+
+    .person-head {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .person-avatar-frame {
+      width: 88px;
+      height: 88px;
+      padding: 4px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(0, 163, 255, 0.08), rgba(255, 255, 255, 0.95));
+      flex-shrink: 0;
+    }
+
+    .person-avatar {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      filter: saturate(0.96) contrast(1.02);
+    }
+
+    .person-desc {
+      margin-top: 0.9em;
+      font-size: clamp(0.92rem, 1.2vw, 1.05rem);
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+
+    .finalist-board {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(1rem, 2vw, 1.8rem);
+      width: 100%;
+      max-width: 1120px;
+    }
+
+    .finalist-item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 1.25rem 1.35rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      min-height: 120px;
+      position: relative;
+    }
+
+    .finalist-item::before {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 1px dotted var(--border);
+      pointer-events: none;
+    }
+
+    .finalist-letter {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 800;
+      line-height: 1;
+      color: var(--accent);
+      flex-shrink: 0;
+      width: 1.5em;
+    }
+
+    .finalist-name {
+      font-size: clamp(1.05rem, 1.55vw, 1.35rem);
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--text);
+    }
+
+    .finalist-meta {
+      margin-top: 0.55em;
+      font-size: clamp(0.88rem, 1.1vw, 1rem);
+      line-height: 1.55;
+      color: var(--text-dim);
+    }
+
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: clamp(1.4rem, 2.2vw, 2.2rem);
+      width: 100%;
+      max-width: 1120px;
+    }
+
+    .meta-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .meta-pill {
+      font-family: var(--font-mono);
+      font-size: clamp(0.75rem, 1vw, 0.9rem);
+      padding: 0.35em 0.75em;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text);
+    }
+
+    .showcase-theme {
+      font-size: clamp(1.15rem, 1.8vw, 1.55rem);
+      color: var(--text);
+      line-height: 1.55;
+      font-weight: 600;
+    }
+
+    .showcase-note {
+      margin-top: 1.2rem;
+      font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .status-board {
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .status-badge {
+      padding: 0.35em 0.8em;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+
+    .prize-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(1.1rem, 2vw, 1.8rem);
+      width: 100%;
+      max-width: 980px;
+    }
+
+    .prize-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: clamp(1.8rem, 3vh, 2.8rem) clamp(1.3rem, 2vw, 2rem);
+      text-align: center;
+      position: relative;
+    }
+
+    .prize-card:first-child::before,
+    .prize-card:first-child::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 1px solid var(--accent);
+      pointer-events: none;
+    }
+
+    .prize-rank {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      line-height: 1;
+    }
+
+    .prize-card:nth-child(1) .prize-rank {
+      color: var(--accent);
+    }
+
+    .prize-card:nth-child(2) .prize-rank {
+      color: var(--text-dim);
+    }
+
+    .prize-card:nth-child(3) .prize-rank {
+      color: var(--text-muted);
+    }
+
+    .prize-name {
+      font-size: clamp(1.05rem, 1.4vw, 1.35rem);
+      color: var(--text);
+      margin-top: 0.55em;
+      font-weight: 700;
+    }
+
+    .prize-bonus {
+      font-size: clamp(0.9rem, 1.05vw, 0.98rem);
+      color: var(--accent);
+      margin-top: 0.9em;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .closing-quote {
+      font-family: var(--font-body);
+      font-weight: 900;
+      font-size: clamp(2.4rem, 5vw, 4.4rem);
+      text-align: center;
+      line-height: 1.18;
+      color: var(--text);
+      max-width: 900px;
+      border-bottom: 4px solid var(--accent);
+      padding-bottom: 0.5em;
+      margin: 0 auto;
+      text-wrap: balance;
+    }
+
+    .closing-sub {
+      font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+      color: var(--text-dim);
+      text-align: center;
+      margin-top: clamp(2rem, 4vh, 3.5rem);
+      line-height: 1.7;
+      font-weight: 500;
+    }
+
+    .mono-note {
+      font-family: var(--font-mono);
+      font-size: clamp(0.88rem, 1.1vw, 1rem);
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    .progress {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      background: var(--accent);
+      z-index: 100;
+      transition: width 0.4s ease;
+    }
+
+    .nav-hint {
+      position: fixed;
+      bottom: clamp(1.2rem, 2vh, 2rem);
+      right: clamp(2rem, 4vw, 3.5rem);
+      font-family: var(--font-mono);
+      font-size: clamp(0.75rem, 1vw, 0.9rem);
+      color: var(--text-muted);
+      z-index: 50;
+      letter-spacing: 0.06em;
+    }
+
+    .slide.active .reveal {
+      animation: revealRight 0.55s ease both;
+    }
+
+    .slide.active .reveal-1 {
+      animation-delay: 0.08s;
+    }
+
+    .slide.active .reveal-2 {
+      animation-delay: 0.18s;
+    }
+
+    .slide.active .reveal-3 {
+      animation-delay: 0.3s;
+    }
+
+    .slide.active .reveal-4 {
+      animation-delay: 0.42s;
+    }
+
+    .slide.active .reveal-5 {
+      animation-delay: 0.54s;
+    }
+
+    @keyframes revealRight {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .reveal {
+      opacity: 0;
+    }
+
+    .gap-sm {
+      height: clamp(0.8rem, 1.5vh, 1.2rem);
+    }
+
+    .gap-md {
+      height: clamp(1.5rem, 2.5vh, 2.5rem);
+    }
+
+    .gap-lg {
+      height: clamp(2.3rem, 4vh, 4rem);
+    }
+
+    @media (max-width: 900px) {
+
+      .grid-2,
+      .grid-3,
+      .person-grid,
+      .prize-grid,
+      .finalist-board,
+      .showcase-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .slide {
+        padding: 2rem 1.5rem;
+        align-items: flex-start;
+        text-align: left;
+      }
+
+      .title-slide {
+        text-align: left;
+      }
+
+      .closing-quote,
+      .closing-sub {
+        text-align: left;
+      }
+
+      .agenda-row,
+      .rule-row,
+      .status-row {
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+
+      .agenda-time {
+        min-width: unset;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="frame-border"></div>
+
+  <div class="deck">
+    <section class="slide title-slide active" data-slide="1">
+      <div class="network-bg"></div>
+      <span class="slide-number">01 / 22</span>
+      <div class="logo-area reveal reveal-1">
+        <span class="logo-text">AGI Lab</span>
+      </div>
+      <h1 class="reveal reveal-2">
+        AI<span class="accent-text">エージェント</span><br>ハッカソン <span
+          style="font-family: var(--font-mono);">2026</span>
+      </h1>
+      <div class="gap-sm"></div>
+      <p class="subtitle reveal reveal-3"
+        style="font-size: clamp(1.25rem, 2.2vw, 1.9rem); font-weight: 700; color: var(--text);">
+        Demo Day / Welcome
+      </p>
+      <p class="date-info reveal reveal-4">2026.03.23 MON 18:00 START - GMO Yours, Shibuya</p>
+      <div class="gap-md"></div>
+      <div class="reveal reveal-5 card card--hero" style="max-width: 760px;">
+        <p class="subtitle" style="color: var(--text); font-weight: 600;">
+          まもなく開始します。前方のお席は審査員・ファイナリスト優先です。
+        </p>
+        <div class="gap-sm"></div>
+        <p class="mono-note">Online stream: https://meet.google.com/sxv-umjv-cex</p>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="2">
+      <span class="slide-number">02 / 22</span>
+      <div class="card card--accent" style="max-width: 1020px;">
+        <span class="tag reveal reveal-1">Opening</span>
+        <div class="gap-md"></div>
+        <h2 class="reveal reveal-2">AGI Lab AI Agent Hackathon 2026 Demo Day</h2>
+        <div class="gap-md"></div>
+        <p class="subtitle reveal reveal-3">
+          本日はご参加ありがとうございます。<br>
+          会場提供の GMO Yours の皆さま、ご協力いただいた皆さまにも感謝申し上げます。
+        </p>
+        <div class="gap-lg"></div>
+        <div class="grid-2 reveal reveal-4">
+          <div class="mini-card">
+            <p class="person-role">Tonight</p>
+            <p class="person-name" style="font-size: clamp(1.2rem, 1.9vw, 1.6rem);">18:15 デモ開始</p>
+          </div>
+          <div class="mini-card">
+            <p class="person-role">Progress</p>
+            <p class="person-name" style="font-size: clamp(1.2rem, 1.9vw, 1.6rem);">5分ハードストップ進行</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="3">
+      <span class="slide-number">03 / 22</span>
+      <div style="width: 100%; max-width: 1040px;">
+        <span class="tag reveal reveal-1">Theme</span>
+        <div class="gap-md"></div>
+        <h1 class="reveal reveal-2"
+          style="font-size: clamp(2.8rem, 6vw, 5.6rem); border-left: 8px solid var(--accent); padding-left: 0.5em;">
+          「一度命じたら、<br><span class="accent-text">あとは任せろ。</span>」
+        </h1>
+        <div class="gap-md"></div>
+        <p class="subtitle reveal reveal-3" style="font-weight: 600;">
+          今日見るのは、自律的に動くAIエージェントをそれぞれのチームがどう形にしたかです。
+        </p>
+        <div class="gap-lg"></div>
+        <div class="card reveal reveal-4" style="max-width: 860px;">
+          <div class="rule-row">
+            <span class="rule-badge required">Focus</span>
+            <p class="rule-text">どこまで自走するか</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="4">
+      <span class="slide-number">04 / 22</span>
+      <div style="width: 100%; max-width: 1120px;">
+        <span class="tag reveal reveal-1">Tonight at a glance</span>
+        <div class="gap-md"></div>
+        <h2 class="reveal reveal-2">今夜の前提</h2>
+        <div class="gap-lg"></div>
+        <div class="grid-3 reveal reveal-3">
+          <div class="metric-box">
+            <p class="value">7</p>
+            <p class="label">Finalists</p>
+            <p class="desc">全7チームが登壇<br>1チームずつライブデモ</p>
+          </div>
+          <div class="metric-box">
+            <p class="value">5<span style="font-size: 0.45em; color: var(--text-muted);">min</span></p>
+            <p class="label">Hard Stop</p>
+            <p class="desc">公平性のため<br>各発表は5分で必ず停止</p>
+          </div>
+          <div class="metric-box">
+            <p class="value">3</p>
+            <p class="label">Judges</p>
+            <p class="desc">その場で採点<br>各デモ後1分で記入</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="5">
+      <span class="slide-number">05 / 22</span>
+      <div style="width: 100%; max-width: 1120px;">
+        <span class="tag reveal reveal-1">Judging</span>
+        <div class="gap-md"></div>
+        <h2 class="reveal reveal-2">審査基準</h2>
+        <div class="gap-lg"></div>
+        <div class="grid-3 reveal reveal-3">
+          <div class="metric-box">
+            <p class="value">40<span style="font-size: 0.45em; color: var(--text-muted);">%</span></p>
+            <p class="label">自律性</p>
+            <p class="desc">一度任せたあと、追加指示なしでどこまで自走できるか</p>
+          </div>
+          <div class="metric-box">
+            <p class="value">35<span style="font-size: 0.45em; color: var(--text-muted);">%</span></p>
+            <p class="label">クオリティ</p>
+            <p class="desc">出力や体験の完成度が、実用レベルに達しているか</p>
+          </div>
+          <div class="metric-box">
+            <p class="value">25<span style="font-size: 0.45em; color: var(--text-muted);">%</span></p>
+            <p class="label">Impact</p>
+            <p class="desc">自分以外にも意味があり、広がる未来を感じられるか</p>
+          </div>
+        </div>
+        <div class="gap-md"></div>
+        <p class="mono-note reveal reveal-4">各軸 1-5点。その場でスコアカードへ記入します。</p>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="6">
+      <span class="slide-number">06 / 22</span>
+      <div style="width: 100%; max-width: 1120px;">
+        <span class="tag reveal reveal-1">Judges</span>
+        <div class="gap-md"></div>
+        <h2 class="reveal reveal-2">審査員</h2>
+        <div class="gap-lg"></div>
+        <div class="person-grid reveal reveal-3">
+          <div class="person-card">
+            <div class="person-head">
+              <div class="person-avatar-frame">
+                <img class="person-avatar" src="https://pbs.twimg.com/profile_images/1905596109478920195/wYNJP_Ap_400x400.jpg"
+                  alt="ちょまどさんのプロフィール画像">
+              </div>
+              <div>
+                <p class="person-role">Judge 01</p>
+                <p class="person-name">ちょまど さん</p>
+                <p class="person-title">Microsoft Cloud Developer Advocate</p>
+                <p class="person-handle">@chomado</p>
+              </div>
+            </div>
+          </div>
+          <div class="person-card">
+            <div class="person-head">
+              <div class="person-avatar-frame">
+                <img class="person-avatar" src="https://pbs.twimg.com/profile_images/1871687946988060673/xDsh_ngS_400x400.jpg"
+                  alt="かずなりさんのプロフィール画像">
+              </div>
+              <div>
+                <p class="person-role">Judge 02</p>
+                <p class="person-name">かずなり さん</p>
+                <p class="person-title">『生成AI活用×大喜利｜すぐに使える! AI仕事術 1行プロンプト集100』著者</p>
+                <p class="person-handle">@MacopeninSUTABA</p>
+              </div>
+            </div>
+          </div>
+          <div class="person-card">
+            <div class="person-head">
+              <div class="person-avatar-frame">
+                <img class="person-avatar" src="https://pbs.twimg.com/profile_images/378800000309892298/1523f05b342b571833ab6405a6b1a169_400x400.jpeg"
+                  alt="kon さんのプロフィール画像">
+              </div>
+              <div>
+                <p class="person-role">Judge 03</p>
+                <p class="person-name">kon さん</p>
+                <p class="person-title">CTO at note inc</p>
+                <p class="person-handle">@konpyu</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="7">
+      <span class="slide-number">07 / 22</span>
+      <div style="width: 100%; max-width: 1040px;">
+        <span class="tag reveal reveal-1">Demo rules</span>
+        <div class="gap-md"></div>
+        <h2 class="reveal reveal-2">デモルール</h2>
+        <div class="gap-md"></div>
+        <div class="card reveal reveal-3">
+          <div class="rule-row">
+            <span class="rule-badge required">Rule 01</span>
+            <p class="rule-text">登壇は <strong>7チーム</strong>、各チームの持ち時間は <strong>5分</strong> です。</p>
+          </div>
+          <div class="rule-row">
+            <span class="rule-badge required">Rule 02</span>
+            <p class="rule-text">公平性のため <strong>5分でハードストップ</strong>。延長はしません。</p>
+          </div>
+          <div class="rule-row">
+            <span class="rule-badge required">Rule 03</span>
+            <p class="rule-text">各デモ後、審査員は <strong>1分で記入</strong> します。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="8">
+      <span class="slide-number">08 / 22</span>
+      <div style="width: 100%; max-width: 1040px;">
+        <span class="tag reveal reveal-1">Run of show</span>
+        <div class="gap-md"></div>
+        <h2 class="reveal reveal-2">今夜の流れ</h2>
+        <div class="gap-md"></div>
+        <div class="card reveal reveal-3">
+          <div class="agenda-row">
+            <span class="agenda-time">17:30</span>
+            <p class="agenda-text">開場</p>
+          </div>
+          <div class="agenda-row">
+            <span class="agenda-time">18:00</span>
+            <p class="agenda-text">開始挨拶</p>
+          </div>
+          <div class="agenda-row">
+            <span class="agenda-time">18:15</span>
+            <p class="agenda-text">Finalist Demo</p>
+          </div>
+          <div class="agenda-row">
+            <span class="agenda-time">18:57</span>
+            <p class="agenda-text">審査・集計</p>
+          </div>
+          <div class="agenda-row">
+            <span class="agenda-time">19:15</span>
+            <p class="agenda-text">表彰</p>
+          </div>
+          <div class="agenda-row">
+            <span class="agenda-time">19:40</span>
+            <p class="agenda-text">Networking</p>
+          </div>
+          <div class="agenda-row">
+            <span class="agenda-time">21:00</span>
+            <p class="agenda-text">Closing</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="9">
+      <span class="slide-number">09 / 22</span>
+      <div style="width: 100%; max-width: 1120px;">
+        <span class="tag reveal reveal-1">Finalists</span>
+        <div class="gap-md"></div>
+        <h2 class="reveal reveal-2">登壇順</h2>
+        <div class="gap-md"></div>
+        <div class="finalist-board reveal reveal-3">
+          <div class="finalist-item">
+            <span class="finalist-letter">A</span>
+            <div>
+              <p class="finalist-name">shift-management-skill</p>
+              <p class="finalist-meta">急な欠勤対応まで自律実行するシフト管理エージェント</p>
+            </div>
+          </div>
+          <div class="finalist-item">
+            <span class="finalist-letter">B</span>
+            <div>
+              <p class="finalist-name">バグ検知Skill DeltaLint(デルタリント)</p>
+              <p class="finalist-meta">設計の食い違いを検出し修正PRまでつなぐバグ検知Skill</p>
+            </div>
+          </div>
+          <div class="finalist-item">
+            <span class="finalist-letter">C</span>
+            <div>
+              <p class="finalist-name">daytrace</p>
+              <p class="finalist-meta">作業ログから日報と改善提案を自動生成する振り返りエージェント</p>
+            </div>
+          </div>
+          <div class="finalist-item">
+            <span class="finalist-letter">D</span>
+            <div>
+              <p class="finalist-name">講座コンテン自動構築システム</p>
+              <p class="finalist-meta">講座タイトルから教材生成までを自動化する講座構築エージェント</p>
+            </div>
+          </div>
+          <div class="finalist-item">
+            <span class="finalist-letter">E</span>
+            <div>
+              <p class="finalist-name">SSS/写真選別支援エージェント</p>
+              <p class="finalist-meta">審美眼を学習し写真選別を代行するエージェント</p>
+            </div>
+          </div>
+          <div class="finalist-item">
+            <span class="finalist-letter">F</span>
+            <div>
+              <p class="finalist-name">Clinical Agent Hub</p>
+              <p class="finalist-meta">受付から書類作成まで自動化する医療事務エージェント</p>
+            </div>
+          </div>
+          <div class="finalist-item" style="grid-column: 1 / -1;">
+            <span class="finalist-letter">G</span>
+            <div>
+              <p class="finalist-name">RoughCut Agent for Creator [video-os-v2]</p>
+              <p class="finalist-meta">大量素材から粗編集まで進める映像編集エージェント</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="10">
+      <span class="slide-number">10 / 22</span>
+      <div class="showcase-grid">
+        <div class="card card--hero reveal reveal-1">
+          <span class="tag">Finalist A</span>
+          <div class="gap-md"></div>
+          <h2>shift-management-skill</h2>
+          <div class="gap-sm"></div>
+          <div class="meta-list">
+            <span class="meta-pill">Presenter: 藍野 雄一朗</span>
+            <span class="meta-pill">5 min demo</span>
+          </div>
+          <p class="showcase-theme">急な欠勤対応まで自律実行するシフト管理エージェント</p>
+        </div>
+        <div class="card reveal reveal-2">
+          <span class="tag">On Deck</span>
+          <div class="gap-md"></div>
+          <h3>Next: バグ検知Skill DeltaLint(デルタリント)</h3>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="11">
+      <span class="slide-number">11 / 22</span>
+      <div class="showcase-grid">
+        <div class="card card--hero reveal reveal-1">
+          <span class="tag">Finalist B</span>
+          <div class="gap-md"></div>
+          <h2>バグ検知Skill DeltaLint(デルタリント)</h2>
+          <div class="gap-sm"></div>
+          <div class="meta-list">
+            <span class="meta-pill">Presenter: 砂川 了人</span>
+            <span class="meta-pill">5 min demo</span>
+          </div>
+          <p class="showcase-theme">設計の食い違いを検出し修正PRまでつなぐバグ検知Skill</p>
+        </div>
+        <div class="card reveal reveal-2">
+          <span class="tag">On Deck</span>
+          <div class="gap-md"></div>
+          <h3>Next: daytrace</h3>
+          <div class="gap-sm"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="12">
+      <span class="slide-number">12 / 22</span>
+      <div class="showcase-grid">
+        <div class="card card--hero reveal reveal-1">
+          <span class="tag">Finalist C</span>
+          <div class="gap-md"></div>
+          <h2>daytrace</h2>
+          <div class="gap-sm"></div>
+          <div class="meta-list">
+            <span class="meta-pill">5 min demo</span>
+          </div>
+          <p class="showcase-theme">作業ログから日報と改善提案を自動生成する振り返りエージェント</p>
+        </div>
+        <div class="card reveal reveal-2">
+          <span class="tag">On Deck</span>
+          <div class="gap-md"></div>
+          <h3>Next: 講座コンテン自動構築システム</h3>
+          <div class="gap-sm"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="13">
+      <span class="slide-number">13 / 22</span>
+      <div class="showcase-grid">
+        <div class="card card--hero reveal reveal-1">
+          <span class="tag">Finalist D</span>
+          <div class="gap-md"></div>
+          <h2>講座コンテン自動構築システム</h2>
+          <div class="gap-sm"></div>
+          <div class="meta-list">
+            <span class="meta-pill">Presenter: 近藤いつお</span>
+            <span class="meta-pill">5 min demo</span>
+          </div>
+          <p class="showcase-theme">講座タイトルから教材生成までを自動化する講座構築エージェント</p>
+        </div>
+        <div class="card reveal reveal-2">
+          <span class="tag">On Deck</span>
+          <div class="gap-md"></div>
+          <h3>Next: SSS/写真選別支援エージェント</h3>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="14">
+      <span class="slide-number">14 / 22</span>
+      <div class="showcase-grid">
+        <div class="card card--hero reveal reveal-1">
+          <span class="tag">Finalist E</span>
+          <div class="gap-md"></div>
+          <h2>SSS/写真選別支援エージェント</h2>
+          <div class="gap-sm"></div>
+          <div class="meta-list">
+            <span class="meta-pill">Presenter: 村山大介</span>
+            <span class="meta-pill">5 min demo</span>
+          </div>
+          <p class="showcase-theme">審美眼を学習し写真選別を代行するエージェント</p>
+        </div>
+        <div class="card reveal reveal-2">
+          <span class="tag">On Deck</span>
+          <div class="gap-md"></div>
+          <h3>Next: Clinical Agent Hub</h3>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="15">
+      <span class="slide-number">15 / 22</span>
+      <div class="showcase-grid">
+        <div class="card card--hero reveal reveal-1">
+          <span class="tag">Finalist F</span>
+          <div class="gap-md"></div>
+          <h2>Clinical Agent Hub</h2>
+          <div class="gap-sm"></div>
+          <div class="meta-list">
+            <span class="meta-pill">Presenter: 福島裕介(しまゆず)</span>
+            <span class="meta-pill">5 min demo</span>
+          </div>
+          <p class="showcase-theme">受付から書類作成まで自動化する医療事務エージェント</p>
+        </div>
+        <div class="card reveal reveal-2">
+          <span class="tag">On Deck</span>
+          <div class="gap-md"></div>
+          <h3>Next: RoughCut Agent for Creator [video-os-v2]</h3>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="16">
+      <span class="slide-number">16 / 22</span>
+      <div class="showcase-grid">
+        <div class="card card--hero reveal reveal-1">
+          <span class="tag">Finalist G</span>
+          <div class="gap-md"></div>
+          <h2>RoughCut Agent for Creator [video-os-v2]</h2>
+          <div class="gap-sm"></div>
+          <div class="meta-list">
+            <span class="meta-pill">Presenter: 坂本拓磨</span>
+            <span class="meta-pill">5 min demo</span>
+          </div>
+          <p class="showcase-theme">大量素材から粗編集まで進める映像編集エージェント</p>
+        </div>
+        <div class="card reveal reveal-2">
+          <span class="tag">After this</span>
+          <div class="gap-md"></div>
+          <h3>スコアカード回収</h3>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="17">
+      <span class="slide-number">17 / 22</span>
+      <div class="card card--accent status-board reveal reveal-1">
+        <span class="state-badge">Scoring</span>
+        <div class="gap-md"></div>
+        <h2>集計中です</h2>
+        <div class="gap-md"></div>
+        <div class="status-row">
+          <p class="status-text">スコアカード回収 <span>運営スタッフが回収と入力を進めています</span></p>
+        </div>
+        <div class="status-row">
+          <p class="status-text">結果発表まで短いゲスト枠へ</p>
+        </div>
+        <div class="status-row">
+          <p class="status-text">ライブデモも含めて審査中</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="18">
+      <span class="slide-number">18 / 22</span>
+      <div class="card card--hero reveal reveal-1" style="max-width: 980px;">
+        <span class="tag">Guest remarks</span>
+        <div class="gap-md"></div>
+        <h2>Guest Remarks</h2>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="19">
+      <span class="slide-number">19 / 22</span>
+      <div style="width: 100%; max-width: 980px;">
+        <span class="tag reveal reveal-1">Awards</span>
+        <div class="gap-md"></div>
+        <h2 class="reveal reveal-2">結果発表</h2>
+        <div class="gap-md"></div>
+        <div class="prize-grid reveal reveal-3">
+          <div class="prize-card">
+            <p class="prize-rank">1st</p>
+            <p class="prize-name">第1位</p>
+          </div>
+          <div class="prize-card">
+            <p class="prize-rank">2nd</p>
+            <p class="prize-name">第2位</p>
+          </div>
+          <div class="prize-card">
+            <p class="prize-rank">3rd</p>
+            <p class="prize-name">第3位</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="20">
+      <span class="slide-number">20 / 22</span>
+      <div class="card card--hero reveal reveal-1" style="max-width: 980px;">
+        <span class="tag">Networking</span>
+        <div class="gap-md"></div>
+        <h2>懇親会スタート</h2>
+        <div class="gap-sm"></div>
+        <p class="subtitle" style="color: var(--text);">
+          受賞チームの皆さま、おめでとうございます。<br>
+          このあとは懇親会です。登壇者・審査員・参加者どうしでぜひ交流をお楽しみください。
+        </p>
+        <div class="gap-lg"></div>
+        <div class="grid-2">
+          <div class="mini-card">
+            <p class="person-role">Food</p>
+            <p class="person-name" style="font-size: clamp(1.15rem, 1.8vw, 1.5rem);">Pizza / Drinks</p>
+          </div>
+          <div class="mini-card">
+            <p class="person-role">Reminder</p>
+            <p class="person-name" style="font-size: clamp(1.15rem, 1.8vw, 1.5rem);">写真・交流歓迎</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="21">
+      <span class="slide-number">21 / 22</span>
+      <div style="width: 100%; max-width: 1000px; text-align: center;">
+        <p class="closing-quote reveal reveal-1">
+          本日の Demo Day は以上です。<br><span class="accent-text">ご参加ありがとうございました。</span>
+        </p>
+        <p class="closing-sub reveal reveal-2">
+          お忘れ物のないようお気をつけてお帰りください。<br>
+          完全撤収は 21:30 を予定しています。
+        </p>
+        <div class="gap-lg"></div>
+        <div class="reveal reveal-3"
+          style="font-family: var(--font-mono); font-size: clamp(0.9rem, 1.2vw, 1.1rem); color: var(--text); display: inline-block; border: 1px solid var(--border); padding: 0.5em 1em; background: var(--bg-surface);">
+          AGI Lab - AI Agent Hackathon 2026 Demo Day
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="22">
+      <span class="slide-number">22 / 22</span>
+      <div class="card reveal reveal-1" style="max-width: 980px;">
+        <span class="tag">Trouble</span>
+        <div class="gap-md"></div>
+        <h2>トラブル時</h2>
+        <div class="gap-md"></div>
+        <div class="rule-row">
+          <span class="rule-badge recommend">AV</span>
+          <p class="rule-text">「映像の切り替えに少々お時間をいただいています。まもなく再開します。」</p>
+        </div>
+        <div class="rule-row">
+          <span class="rule-badge recommend">Order</span>
+          <p class="rule-text">準備未完了なら順番を入れ替えます。</p>
+        </div>
+        <div class="rule-row">
+          <span class="rule-badge recommend">Delay</span>
+          <p class="rule-text">審査未確定時は短くつないで結果発表へ進みます。</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="progress" id="progress"></div>
+  <div class="nav-hint">&#8592; &#8594; or click to navigate</div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const progress = document.getElementById('progress');
+    let current = 0;
+    const total = slides.length;
+
+    function goTo(n) {
+      if (n < 0 || n >= total) return;
+      slides[current].classList.remove('active');
+      slides[current].querySelectorAll('.reveal').forEach((el) => {
+        el.style.animation = 'none';
+        el.offsetHeight;
+        el.style.animation = '';
+        el.style.opacity = '0';
+      });
+      current = n;
+      slides[current].classList.add('active');
+      slides[current].querySelectorAll('.reveal').forEach((el) => {
+        el.style.opacity = '';
+      });
+      progress.style.width = (((current + 1) / total) * 100) + '%';
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        goTo(current + 1);
+      }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goTo(current - 1);
+      }
+      if (e.key === 'Home') {
+        e.preventDefault();
+        goTo(0);
+      }
+      if (e.key === 'End') {
+        e.preventDefault();
+        goTo(total - 1);
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (e.target.tagName.toLowerCase() === 'a') return;
+      if (e.clientX < window.innerWidth / 3) goTo(current - 1);
+      else goTo(current + 1);
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    });
+    document.addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) goTo(current + 1);
+        else goTo(current - 1);
+      }
+    });
+
+    progress.style.width = ((1 / total) * 100) + '%';
+  </script>
+</body>
+
+</html>
